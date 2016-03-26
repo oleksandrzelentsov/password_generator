@@ -1,0 +1,6 @@
+*.db
+build/
+*.swp
+*.so
+.*.db
+
