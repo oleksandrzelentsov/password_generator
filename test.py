@@ -11,16 +11,24 @@ def get_args():
 	parser.add_argument('-c', '--count', nargs='?', type=int, help='count of passwords to generate', default=1)
 	parser.add_argument('-min', '--min_size', nargs='?', type=int, help='minimum size of password', default=16)
 	parser.add_argument('-max', '--max_size', nargs='?', type=int, help='maximum size of password', default=17)
-	parser.add_argument('-v', '--verbose', help='print all unique passwords (statistics will be printed if no this option)', const=True, action="store_const", default=False)
-	parser.add_argument('-s', '--statistics', help='do not print statistical data (passwords will be printed)', const=False, action="store_const", default=True)
-	parser.add_argument('-d', '--database', help='do not fill statistical data in the database', const=False, action="store_const", default=True)
+	parser.add_argument('-s', '--silent', help='do not print all unique passwords', const=True, action="store_const", default=False)
+	parser.add_argument('-d', '--statistical-data', help='print statistical data', const=True, action="store_const", default=False)
+	parser.add_argument('-D', '--database', help='do not fill statistical data in the database', const=False, action="store_const", default=True)
 	args = parser.parse_args(sys.argv[1:])
 	return args
+
+def create_db(cur):
+	sql = ''
+	with open('schema.sql', 'r') as f:
+		sql += ''.join(f.readlines())
+	cur.executescript(sql)
+	cur.connection.commit()
 
 def add_to_database(*args):
 	database_filename = '.password_generation_effectiveness.db'
 	conn = sqlite3.connect(database_filename)
 	cur = conn.cursor()
+	create_db(cur)
 	sql = """insert into generation_data
 	(count, min_length, max_length, arguments_parsing_time,
 	unary_generation_time, whole_generation_time, duplicates_count)
@@ -35,9 +43,9 @@ def Main():
 	n = args.count
 	size_min = args.min_size
 	size_max = args.max_size
-	verbose = args.verbose
+	silent = args.silent
 	write_to_db = args.database
-	show_statistics = args.statistics
+	show_statistics = args.statistical_data
 	argparse_time = time() - argparse_time
 	data = []
 	one_iteration_time_array = []
@@ -52,12 +60,12 @@ def Main():
 	unary_generation_time = (float(sum(one_iteration_time_array))/float(len(one_iteration_time_array)))
 	dups = len(data) - len(u_data)
 	dups_percent = round(float(dups)/float(len(data)) * 100, 2)
-	if verbose or not show_statistics:
+	if not silent:
 		print 'Passwords:\n{'
 		for i in sorted(u_data, key=lambda x: len(x)):
 			print '\t', i
 		print '}'
-	if show_statistics or not verbose:
+	if show_statistics:
 		print 'arguments parsing time:\t\t\t%e' % argparse_time
 		print 'unary generation time:\t\t\t%e' % unary_generation_time
 		print 'whole generation time:\t\t\t%.2f' % whole_generation_time

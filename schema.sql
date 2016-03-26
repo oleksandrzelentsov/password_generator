@@ -8,4 +8,3 @@ CREATE TABLE IF NOT EXISTS "generation_data" (
     "whole_generation_time" REAL NOT NULL,
     "duplicates_count" INTEGER NOT NULL
 );
-CREATE TABLE sqlite_sequence(name,seq);
