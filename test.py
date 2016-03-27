@@ -63,7 +63,8 @@ def add_to_database(*args):
 	create_db(cur)
 	sql = """insert into generation_data
 	(count, min_length, max_length, arguments_parsing_time,
-	unary_generation_time, whole_generation_time, duplicates_count, c_files_hash, py_files_hash, git_commit_message)
+	unary_generation_time, whole_generation_time,
+	duplicates_count, c_files_hash, py_files_hash, git_commit_message)
 	values (?,?,?,?,?,?,?,?,?,?)"""
 	cur.execute(sql, tuple(list(args) + [get_c_hash(), get_py_hash(), get_latest_git_commit_message()]))
 	conn.commit()
