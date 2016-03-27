@@ -4,8 +4,40 @@ import random
 import sys
 import argparse
 import sqlite3
+import subprocess
+from hashlib import md5
 from time import time
 
+def get_py_hash():
+	r = ''
+	with open(__file__, 'r') as f:
+		for i in f:
+			r += i
+	return md5(r).hexdigest()
+
+def get_c_hash():
+	r = ''
+	with open(myModule.__file__, 'r') as f:
+		for i in f:
+			r += i
+	return md5(r).hexdigest()
+
+def get_latest_git_commit_message():
+	commit_message_path = ('' if 'win' in sys.platform else '/tmp/') + 'latest_commit_message.tmp'
+	msg = ''
+	p = None
+	with open(commit_message_path, 'w') as f:
+		p = subprocess.call('git log -1 --pretty=%B'.split(), stdout=f, stderr=f)
+	if p:
+		return ''
+	with open(commit_message_path, 'r') as f:
+		t = ''
+		for i in f:
+			t += i
+		msg = t.strip()
+	subprocess.call(['rm', commit_message_path])
+	return msg
+		
 def get_args():
 	parser = argparse.ArgumentParser(description='Generate some passwords and print generation statistics.')
 	parser.add_argument('-c', '--count', nargs='?', type=int, help='count of passwords to generate', default=1)
@@ -31,9 +63,9 @@ def add_to_database(*args):
 	create_db(cur)
 	sql = """insert into generation_data
 	(count, min_length, max_length, arguments_parsing_time,
-	unary_generation_time, whole_generation_time, duplicates_count)
-	values (?,?,?,?,?,?,?)"""
-	cur.execute(sql, args)
+	unary_generation_time, whole_generation_time, duplicates_count, c_files_hash, py_files_hash, git_commit_message)
+	values (?,?,?,?,?,?,?,?,?,?)"""
+	cur.execute(sql, tuple(list(args) + [get_c_hash(), get_py_hash(), get_latest_git_commit_message()]))
 	conn.commit()
 	conn.close()
 
@@ -42,7 +74,7 @@ def Main():
 	args = get_args()
 	n = args.count
 	size_min = args.min_size
-	size_max = args.max_size
+	size_max = args.max_size if size_min < args.max_size else size_min + 1
 	silent = args.silent
 	write_to_db = args.database
 	show_statistics = args.statistical_data
@@ -52,7 +84,7 @@ def Main():
 	whole_generation_time = time()
 	for i in range(n):
 		one_iteration_time = time()
-		data += [myModule.generate_password(random.randrange(size_min, size_max), i)]
+		data.append(myModule.generate_password(random.randrange(size_min, size_max), i))
 		one_iteration_time_array.append(time() - one_iteration_time)
 
 	u_data = set(data)
@@ -66,9 +98,9 @@ def Main():
 			print '\t', i
 		print '}'
 	if show_statistics:
-		print 'arguments parsing time:\t\t\t%e' % argparse_time
-		print 'unary generation time:\t\t\t%e' % unary_generation_time
-		print 'whole generation time:\t\t\t%.2f' % whole_generation_time
+		print 'arguments parsing time:\t\t\t%es' % argparse_time
+		print 'unary generation time:\t\t\t%es' % unary_generation_time
+		print 'whole generation time:\t\t\t%.2fs' % whole_generation_time
 		print 'duplicates count & %%:\t\t\t%i (%.2f%%)' % (dups, dups_percent)
 	if write_to_db:
 		add_to_database(n, size_min, size_max, argparse_time, unary_generation_time, whole_generation_time, dups)

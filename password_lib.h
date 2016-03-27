@@ -57,7 +57,7 @@ int enc(char* s, int seed)
 
 char* gen(int length, int seed)
 {
-	char* result = (char*) calloc(length, sizeof(char));
+	char* result = calloc(length + 1, sizeof(char));
 	int lng = 0;
 	srand((unsigned int)time(NULL) + length * seed);
 	while(lng < ((length == 0) ? 8 : length))
@@ -66,6 +66,7 @@ char* gen(int length, int seed)
 		if(ispasschar(c = rand() % 256))
 			result[lng++] = c;
 	}
+	result[length] = '\0';
 	enc(result, seed);
 	return result;
 }
