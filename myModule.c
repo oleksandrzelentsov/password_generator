@@ -4,9 +4,9 @@
 static PyObject* generate_password(PyObject* self, PyObject* args)
 {
 	int n = 8;
-	int seed = rand()%100;
+	int seed = rand() % 100;
 	char* s;
-	PyArg_ParseTuple(args, "ii", &n, &seed);
+	PyArg_ParseTuple(args, "|ii", &n, &seed);
 	s = gen(n, seed);
 	PyObject* result = Py_BuildValue("s", s);
 	free(s);
