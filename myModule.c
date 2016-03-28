@@ -1,4 +1,5 @@
 #include <Python.h>
+
 #include "password_lib.h"
 
 static PyObject* generate_password(PyObject* self, PyObject* args)

@@ -1,7 +1,10 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "ctype.h"
-#include "time.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <time.h>
+#include <string.h>
+
+char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ";
 
 const int ispasschar(const char c)
 {
@@ -28,45 +31,23 @@ void change(char* a, char* b)
 
 char get_next_password_symbol(void)
 {
-	char c;
-	while(!ispasschar(c = rand() % 256));
-	return c;
-}
-
-int enc(char* s, int seed)
-{
-	int i;
-	for(i = 0; s[i] != '\0'; i++) 
-	{
-		change(s + i,s + rand() % strlen(s));
-		s[i] = get_next_password_symbol();
-		change(s + i,s + rand() % strlen(s));
-		s[i] = get_next_password_symbol();
-		change(s + i,s + rand() % strlen(s));
-		if(rand() % 2 - 1)
-		{
-			s[i] = rand()%10+'0';
-		}
-		if(rand()%4 == 3)
-		{
-			s[i] = get_next_password_symbol();
-		}
-	}
-	return 0;
+	return alphabet[rand() % strlen(alphabet)];
 }
 
 char* gen(int length, int seed)
 {
 	char* result = calloc(length + 1, sizeof(char));
-	int lng = 0;
-	srand((unsigned int)time(NULL) + length * seed);
-	while(lng < ((length == 0) ? 8 : length))
+	int lng = 0, i;
+	srand((unsigned int) time(NULL) + length * seed);
+	while(lng < length)
 	{
-		char c;
-		if(ispasschar(c = rand() % 256))
-			result[lng++] = c;
+		result[lng++] = get_next_password_symbol();
+	}
+	for(i = 0; result[i] != '\0'; i++) 
+	{
+		change(result + i, result + rand() % length);
+		result[i] = get_next_password_symbol();
 	}
 	result[length] = '\0';
-	enc(result, seed);
 	return result;
 }

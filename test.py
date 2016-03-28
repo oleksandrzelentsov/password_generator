@@ -75,7 +75,7 @@ def Main():
 	args = get_args()
 	n = args.count
 	size_min = args.min_size
-	size_max = args.max_size if size_min < args.max_size else size_min + 1
+	size_max = args.max_size if size_min < args.max_size else size_min
 	silent = args.silent
 	write_to_db = args.database
 	show_statistics = args.statistical_data
@@ -85,7 +85,7 @@ def Main():
 	whole_generation_time = time()
 	for i in range(n):
 		one_iteration_time = time()
-		data.append(myModule.generate_password(random.randrange(size_min, size_max), i))
+		data.append(myModule.generate_password(random.randrange(size_min, size_max + 1), i))
 		one_iteration_time_array.append(time() - one_iteration_time)
 
 	u_data = set(data)
