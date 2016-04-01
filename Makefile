@@ -7,4 +7,5 @@ compile: setup.py $(filename).c
 install: setup.py
 	python setup.py install
 
-clean: build $(filename).so
+clean: build
+	rm -R build
