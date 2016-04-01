@@ -22,3 +22,4 @@ PyMODINIT_FUNC initmyModule(void)
 {
 	(void) Py_InitModule("myModule", myMethods);
 }
+ 

@@ -37,12 +37,12 @@ def get_latest_git_commit_message():
 		msg = t.strip()
 	subprocess.call(['rm', commit_message_path])
 	return msg
-		
+
 def get_args():
 	parser = argparse.ArgumentParser(description='Generate some passwords and print generation statistics.')
 	parser.add_argument('-c', '--count', nargs='?', type=int, help='count of passwords to generate', default=1)
 	parser.add_argument('-min', '--min_size', nargs='?', type=int, help='minimum size of password', default=16)
-	parser.add_argument('-max', '--max_size', nargs='?', type=int, help='maximum size of password', default=17)
+	parser.add_argument('-max', '--max_size', nargs='?', type=int, help='maximum size of password', default=0)
 	parser.add_argument('-s', '--silent', help='do not print all unique passwords', const=True, action="store_const", default=False)
 	parser.add_argument('-d', '--statistical-data', help='print statistical data', const=True, action="store_const", default=False)
 	parser.add_argument('-D', '--database', help='do not fill statistical data in the database', const=False, action="store_const", default=True)
@@ -94,10 +94,12 @@ def Main():
 	dups = len(data) - len(u_data)
 	dups_percent = round(float(dups)/float(len(data)) * 100, 2)
 	if not silent:
-		print 'Passwords:\n{'
+		if n > 1:
+			print 'Passwords:\n{'
 		for i in sorted(u_data, key=lambda x: len(x)):
 			print '\t', i
-		print '}'
+		if n > 1:
+			print '}'
 	if show_statistics:
 		print 'arguments parsing time:\t\t\t%es' % argparse_time
 		print 'unary generation time:\t\t\t%es' % unary_generation_time
