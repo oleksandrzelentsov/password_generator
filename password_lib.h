@@ -27,11 +27,11 @@ char* gen(int length, int seed)
 	{
 		result[lng++] = get_next_password_symbol();
 	}
+	result[length] = '\0';
 	for(i = 0; result[i] != '\0'; i++)
 	{
 		change(result + i, result + rand() % length);
-		result[i] = get_next_password_symbol();
+		//result[i] = get_next_password_symbol();
 	}
-	result[length] = '\0';
 	return result;
 }
