@@ -2,7 +2,6 @@
 build/
 *.swp
 *.so
-.*.db
 .idea/*
 robot-tests/results/*
 
