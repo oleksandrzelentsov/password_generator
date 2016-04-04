@@ -9,6 +9,61 @@ from hashlib import md5
 from time import time
 
 
+class Statistics(object):
+    def __init__(self):
+        self._data = dict()
+
+    def __getitem__(self, item):
+        if item in self._data.keys():
+            return self._data[item]['format_string'] % self._data[item]['value']
+        else:
+            raise KeyError('there is no statistics item with such key')
+
+    def add(self, name, format_string, value):
+        self._data[name] = {'format_string': format_string, 'value': value}
+
+    def iteritems(self):
+        return sorted([(k, self._data[k]) for k in self._data.keys()], key=lambda x: x[0])
+
+    def get(self, item):
+        if item in self._data.keys():
+            return self._data[item]['format_string'] % self._data[item]['value']
+        else:
+            return None
+
+
+def generate_password(statistics, passwords_count=1, do_not_print_passwords=False, size_min=16, size_max=16,
+                      show_statistics=False, write_to_db=False):
+    data = []
+    one_iteration_time_array = []
+    whole_generation_time = time()
+    for i in range(passwords_count):
+        one_iteration_time = time()
+        data.append(myModule.generate_password(random.randrange(size_min, size_max + 1), i))
+        one_iteration_time_array.append(time() - one_iteration_time)
+
+    u_data = set(data)
+    whole_generation_time = round(time() - whole_generation_time, 2)
+    unary_generation_time = (float(sum(one_iteration_time_array)) / float(len(one_iteration_time_array)))
+    duplicates_count = len(data) - len(u_data)
+    duplicates_percent = round(float(duplicates_count) / float(len(data)) * 100, 2)
+    statistics.add('unary_generation_time', 'unary generation time:\t\t\t%es', unary_generation_time)
+    statistics.add('whole_generation_time', 'whole generation time:\t\t\t%.2fs', whole_generation_time)
+    statistics.add('duplicates', 'duplicates count & %%:\t\t\t%i (%.2f%%)', (duplicates_count, duplicates_percent))
+    if not do_not_print_passwords:
+        if passwords_count > 1:
+            print 'Passwords:\n{'
+        for i in sorted(u_data, key=lambda x: len(x)):
+            print '\t', i
+        if passwords_count > 1:
+            print '}'
+    if show_statistics:
+        for k, v in statistics.iteritems():
+            print statistics.get(k)
+    if write_to_db: # TODO make db functionality
+        print 'write to database functionality is not yet implemented'
+
+
 def get_py_hash():
     r = ''
     with open(__file__, 'r') as f:
@@ -81,6 +136,7 @@ values (?,?,?,?,?,?,?,?,?,?)"""
 
 
 def main_function():
+    statistics = Statistics()
     argparse_time = time()
     args = get_args()
     n = args.count
@@ -90,34 +146,8 @@ def main_function():
     write_to_db = args.database
     show_statistics = args.statistical_data
     argparse_time = time() - argparse_time
-    data = []
-    one_iteration_time_array = []
-    whole_generation_time = time()
-    for i in range(n):
-        one_iteration_time = time()
-        data.append(myModule.generate_password(random.randrange(size_min, size_max + 1), i))
-        one_iteration_time_array.append(time() - one_iteration_time)
-
-    u_data = set(data)
-    whole_generation_time = round(time() - whole_generation_time, 2)
-    unary_generation_time = (float(sum(one_iteration_time_array)) / float(len(one_iteration_time_array)))
-    duplicates_count = len(data) - len(u_data)
-    duplicates_percent = round(float(duplicates_count) / float(len(data)) * 100, 2)
-    if not silent:
-        if n > 1:
-            print 'Passwords:\n{'
-        for i in sorted(u_data, key=lambda x: len(x)):
-            print '\t', i
-        if n > 1:
-            print '}'
-    if show_statistics:
-        print 'arguments parsing time:\t\t\t%es' % argparse_time
-        print 'unary generation time:\t\t\t%es' % unary_generation_time
-        print 'whole generation time:\t\t\t%.2fs' % whole_generation_time
-        print 'duplicates count & %%:\t\t\t%i (%.2f%%)' % (duplicates_count, duplicates_percent)
-    if write_to_db:
-        add_to_database(n, size_min, size_max, argparse_time, unary_generation_time, whole_generation_time,
-                        duplicates_count)
+    statistics.add('argparse_time', 'arguments parsing time:\t\t\t%es', argparse_time)
+    generate_password(statistics, n, silent, size_min, size_max, show_statistics, write_to_db)
 
 
 if __name__ == "__main__":
