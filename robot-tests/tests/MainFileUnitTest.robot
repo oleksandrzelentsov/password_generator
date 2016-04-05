@@ -7,37 +7,25 @@ Documentation    Tests main file functions
 #Library  Builtin
 Library  Collections
 Library  String
-Library  ../libraries/MyLibrary.py
+Library  ${LIBS}PasswordGenerationLibrary.py
 
 *** Test Cases ***
-Password uniqueness
-    [Documentation]  Generated passwords are unique
-    ${passwords} =  Generate 100 Passwords Of Length 2
-    log list  ${passwords}
-    list should not contain duplicates  ${passwords}
+
+Password Uniqueness
+    [Documentation]  Checks password uniqueness.
+    Given Generate 10000 Passwords 5 Characters Long
+    When The Passwords Are Generated
+    Then Passwords Should Be Unique
 
 
 *** Keywords ***
 
-Generate Password Of Length ${length:\d+}
-    [Documentation]  Generates one password with specified length.
-    ${password} =  evaluate  myModule.generate_password(${length})  modules=myModule
-    [Return]  ${password}
+Passwords Should Be Unique
+    [Documentation]  Checks if passwords generated are unique
+    ${passwords} =  Generated Passwords
+    list should not contain duplicates  ${passwords}
 
-
-Generate Password Of Length ${length:\d+} With Seed ${seed:\d+}
-    [Documentation]  Generates one password with specified length.
-    ${password} =  evaluate  myModule.generate_password(${length}, ${seed})  modules=myModule
-    [Return]  ${password}
-
-
-Generate ${n:\d+} Passwords Of Length ${length:\d+}
-    [Documentation]  Get list of randomly generated passwords.
-    [Teardown]  sleep  1
-    ${passwords} =  create list
-    :FOR  ${index}  IN RANGE  0  ${n}
-    \  ${password} =  Generate Password Of Length ${length} With Seed ${index}
-    \
-    \  append to list  ${passwords}  ${password}
-
-    [Return]  ${passwords}
+The Passwords Are Generated
+    [Documentation]  Checks if passwords are generated
+    ${passwords} =  Generated Passwords
+    should not be empty  ${passwords}
