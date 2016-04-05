@@ -13,7 +13,8 @@ Library  ${LIBS}PasswordGenerationLibrary.py
 
 Password Uniqueness
     [Documentation]  Checks password uniqueness.
-    Given Generate 10000 Passwords 5 Characters Long
+    [Tags]  Smoke
+    Given Generate 10000 Passwords Each 5 Characters Long
     When The Passwords Are Generated
     Then Passwords Should Be Unique
 

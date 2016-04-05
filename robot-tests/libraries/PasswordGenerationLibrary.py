@@ -20,7 +20,7 @@ class PasswordGenerationLibrary(object):
         seed = int(seed)
         self._password_cache.append(myModule.generate_password(length, seed))
 
-    @keyword('Generate ${count:\d+} Passwords ${length:\d+} Characters Long')
+    @keyword('Generate ${count:\d+} Passwords Each ${length:\d+} Characters Long')
     def generate_passwords(self, count, length):
         count = int(count)
         length = int(length)
