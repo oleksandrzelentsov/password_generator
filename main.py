@@ -52,9 +52,9 @@ def generate_password(statistics, passwords_count=1, do_not_print_passwords=Fals
     statistics.add('duplicates', 'duplicates count & %%:\t\t\t%i (%.2f%%)', (duplicates_count, duplicates_percent))
     if not do_not_print_passwords:
         if passwords_count > 1:
-            print 'Passwords:\n{'
+            print 'Passwords {'
         for i in sorted(u_data, key=lambda x: len(x)):
-            print '\t', i
+            print i
         if passwords_count > 1:
             print '}'
     if show_statistics:
