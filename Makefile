@@ -1,4 +1,4 @@
-filename = myModule
+filename = pasgens
 
 compile: setup.py $(filename).c
 	python setup.py build

@@ -18,8 +18,8 @@ PyMethodDef myMethods[] = {
 	{NULL, NULL, 0, NULL}
 };
 
-PyMODINIT_FUNC initmyModule(void)
+PyMODINIT_FUNC initpasgens(void)
 {
-	(void) Py_InitModule("myModule", myMethods);
+	(void) Py_InitModule("pasgens", myMethods);
 }
  

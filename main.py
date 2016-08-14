@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import myModule
+import pasgens
 import random
 import sys
 import argparse
@@ -39,7 +39,7 @@ def generate_password(statistics, passwords_count=1, do_not_print_passwords=Fals
     whole_generation_time = time()
     for i in range(passwords_count):
         one_iteration_time = time()
-        data.append(myModule.generate_password(random.randrange(size_min, size_max + 1), i))
+        data.append(pasgens.generate_password(random.randrange(size_min, size_max + 1), i))
         one_iteration_time_array.append(time() - one_iteration_time)
 
     u_data = set(data)
@@ -74,7 +74,7 @@ def get_py_hash():
 
 def get_c_hash():
     r = ''
-    with open(myModule.__file__, 'r') as f:
+    with open(pasgens.__file__, 'r') as f:
         for i in f:
             r += i
     return md5(r).hexdigest()
