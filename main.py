@@ -9,7 +9,7 @@ from hashlib import md5
 from time import time
 
 
-class Statistics(object):
+class Statistics:
     def __init__(self):
         self._data = dict()
 
@@ -60,7 +60,7 @@ def generate_password(statistics, passwords_count=1, do_not_print_passwords=Fals
     if show_statistics:
         for k, v in statistics.iteritems():
             print statistics.get(k)
-    if write_to_db: # TODO make db functionality
+    if write_to_db:  # TODO make db functionality
         print 'write to database functionality is not yet implemented'
 
 
