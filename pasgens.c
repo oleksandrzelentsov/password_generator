@@ -18,8 +18,26 @@ PyMethodDef myMethods[] = {
 	{NULL, NULL, 0, NULL}
 };
 
-PyMODINIT_FUNC initpasgens(void)
+PyMODINIT_FUNC
+PyInit_pasgen(void)
 {
-	(void) Py_InitModule("pasgens", myMethods);
+    PyObject *m;
+
+    m = PyModule_Create(&pasgenModule);
+    if (m == NULL)
+        return NULL;
+
+    SpamError = PyErr_NewException("spam.error", NULL, NULL);
+    Py_INCREF(SpamError);
+    PyModule_AddObject(m, "error", SpamError);
+    return m;
+}
+
+PyMODINIT_FUNC
+Py_InitModule(void)
+{
+	PyObject* m;
+
+	m = PyModule_Create
 }
  
